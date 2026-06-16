@@ -37,7 +37,7 @@ export const authService = {
 
     try {
       await api.post('/auth/logout')
-    } catch (error) {
+    } catch {
       console.log('Logout lokal berhasil')
     }
   }

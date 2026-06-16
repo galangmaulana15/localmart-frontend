@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { authService } from '../services/authService'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
@@ -19,7 +20,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await authService.getMe()
       setUser(response.data?.data || null)
-    } catch (error) {
+    } catch {
       localStorage.removeItem('token')
       setUser(null)
     } finally {
@@ -28,7 +29,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    checkAuth()
+    queueMicrotask(checkAuth)
   }, [checkAuth])
 
   const login = useCallback(async (email, password) => {
@@ -63,7 +64,6 @@ export function AuthProvider({ children }) {
     register,
     logout,
     isAuthenticated: !!user,
-    isAdmin: user?.role_id === 1,
     isSeller: user?.role_id === 2,
     isCustomer: user?.role_id === 3
   }), [user, loading, login, register, logout])

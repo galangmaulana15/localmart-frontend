@@ -1,0 +1,85 @@
+[2m13.19.39[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 400
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx:47:19)
+[2m13.43.21[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=05cb18de' does not provide an export named 'HJawaome'
+[2m13.43.21[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/ProductListPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m13.43.24[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mSyntaxError[22m: The requested module '/node_modules/.vite/deps/lucide-react.js?v=05cb18de' does not provide an export named 'HJawaome'
+[39m
+[2m13.43.24[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in one of your React components.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m13.43.25[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31m[Unhandled error] [1mSyntaxError[22m: The requested module '/node_modules/.vite/deps/lucide-react.js?v=05cb18de' does not provide an export named 'HJawaome'
+[39m
+[2m13.43.25[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mAn error occurred in one of your React components.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+[2m15.12.11[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 400
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx:47:19)
+[2m17.11.09[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 400
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx:47:19)
+[2m17.34.06[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 400
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx:47:19)
+[2m18.00.45[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mThe final argument passed to useEffect changed size between renders. The order and size of this array must remain constant.
+
+Previous: [true, true, [object Object]]
+Incoming: [true, true, 19, Galang Ponco]
+[2m18.01.16[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mThe final argument passed to useEffect changed size between renders. The order and size of this array must remain constant.
+
+Previous: [true, true, 19, Galang Ponco]
+Incoming: [true, true, [object Object], 19, Galang Ponco]
+[2m18.01.16[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mThe final argument passed to useEffect changed size between renders. The order and size of this array must remain constant.
+
+Previous: [true, true, [object Object]]
+Incoming: [true, true, [object Object], 19, Galang Ponco]
+[2m18.34.20[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mA component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components
+[2m19.26.37[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 404
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js?t=1781612725226:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx?t=1781612725226:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx?t=1781612725226:47:19)
+[2m19.26.41[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 404
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js?t=1781612725226:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx?t=1781612725226:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx?t=1781612725226:47:19)
+[2m19.26.58[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 404
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js?t=1781612725226:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx?t=1781612725226:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx?t=1781612725226:47:19)
+[2m19.27.27[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mLogin error: AxiosError: Request failed with status code 404
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:1752:14)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2105:4)
+    at Axios$1.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=24acae6b:2854:37)
+    at async Object.login (http://localhost:5173/src/services/authService.js?t=1781612725226:4:20)
+    at async http://localhost:5173/src/contexts/AuthContext.jsx?t=1781612725226:34:20
+    at async handleSubmit (http://localhost:5173/src/pages/LoginPage.jsx?t=1781612725226:47:19)

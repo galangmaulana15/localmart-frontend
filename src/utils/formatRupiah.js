@@ -43,3 +43,26 @@ export const getImageUrl = (imageUrl, productName = '') => {
   // Default fallback
   return `https://placehold.co/400x400?text=${encodeURIComponent(productName || 'LocalMart')}&bg=FF6B35&textColor=white`
 }
+
+export const getProductName = (product = {}) => {
+  return product?.name || product?.product_name || 'Produk LocalMart'
+}
+
+export const getCategoryName = (product = {}) => {
+  return product?.category_name || product?.category || 'Umum'
+}
+
+export const getStoreName = (product = {}) => {
+  return product?.store_name || product?.seller_name || product?.store || 'Toko LocalMart'
+}
+
+export const getApiData = (response, fallback = null) => {
+  if (!response) return fallback
+  if (Array.isArray(response)) return response
+  if (response.data?.data) return response.data.data
+  if (response.data) return response.data
+  if (response.result) return response.result
+  if (response.products) return response.products
+  if (response.categories) return response.categories
+  return fallback
+}

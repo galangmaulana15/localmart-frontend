@@ -16,7 +16,10 @@ export default function PrivateRoute({ allowedRoles = [] }) {
     return <Navigate to="/login" replace />
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role?.name) && !allowedRoles.includes(user?.role)) {
+  const roleMap = { seller: 2, customer: 3 }
+  const allowedIds = allowedRoles.map(r => roleMap[r]).filter(Boolean)
+
+  if (allowedRoles.length > 0 && !allowedIds.includes(user?.role_id)) {
     return <Navigate to="/" replace />
   }
 

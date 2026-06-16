@@ -17,9 +17,11 @@ export default function LoginPage() {
   useEffect(() => {
     // Ambil pesan sukses dari location state (misal dari register atau verify OTP)
     if (location.state?.message) {
-      setSuccess(location.state.message)
-      // Hapus state agar tidak muncul lagi saat refresh
-      window.history.replaceState({}, document.title)
+      queueMicrotask(() => {
+        setSuccess(location.state.message)
+        // Hapus state agar tidak muncul lagi saat refresh
+        window.history.replaceState({}, document.title)
+      })
     }
   }, [location])
 
@@ -46,16 +48,8 @@ export default function LoginPage() {
       const result = await login(email.trim(), password)
       console.log('Login success:', result)
       
-      // Redirect berdasarkan role (opsional)
-      // if (result.user?.role === 'admin') {
-      //   navigate('/admin/dashboard')
-      // } else if (result.user?.role === 'seller') {
-      //   navigate('/seller/dashboard')
-      // } else {
-      //   navigate('/')
-      // }
-      
-      navigate('/')
+      const roleId = result?.data?.user?.role_id || result?.user?.role_id
+      navigate(roleId === 2 ? '/seller/dashboard' : '/')
     } catch (err) {
       console.error('Login error:', err)
       

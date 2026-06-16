@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { ShoppingBag, Heart, ShoppingCart, Wallet, Store, User, LogOut, Menu, X, Search, Sparkles } from 'lucide-react'
+import { ShoppingBag, Heart, ShoppingCart, Wallet, Store, LogOut, Menu, X, Search, Sparkles, ClipboardList, Package, MessageSquare, Star, UserCircle2 } from 'lucide-react'
+import { cartService } from '../../services/cartService'
+import { orderService } from '../../services/orderService'
+import { getChatThreads, getWishlist } from '../../utils/demoStore'
+import { getApiData } from '../../utils/formatRupiah'
 
 export default function Navbar() {
-  const { user, logout, isAuthenticated, isSeller, isAdmin } = useAuth()
+  const { user, logout, isAuthenticated, isSeller, isCustomer } = useAuth()
   const navigate = useNavigate()
+  const userName = user?.full_name || user?.name || 'User'
+  const customerKey = String(user?.id || user?.email || '')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [cartCount, setCartCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0)
+  const [ordersCount, setOrdersCount] = useState(0)
+  const [chatCount, setChatCount] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -17,19 +26,88 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Ambil nama dari user (support full_name atau name)
-  const getUserName = () => {
-    return user?.full_name || user?.name || 'User'
-  }
+  useEffect(() => {
+    const updateWishlist = () => setWishlistCount(getWishlist().length)
+    updateWishlist()
+    window.addEventListener('wishlist-updated', updateWishlist)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'localmart_wishlist') updateWishlist()
+    })
+    return () => {
+      window.removeEventListener('wishlist-updated', updateWishlist)
+      window.removeEventListener('storage', updateWishlist)
+    }
+  }, [])
+
+  useEffect(() => {
+    const updateCart = async () => {
+      try {
+        const res = await cartService.get()
+        const data = getApiData(res, { items: [] })
+        setCartCount(data.items?.length || 0)
+      } catch {
+        setCartCount(0)
+      }
+    }
+    updateCart()
+    window.addEventListener('cart-updated', updateCart)
+    return () => window.removeEventListener('cart-updated', updateCart)
+  }, [])
+
+  useEffect(() => {
+    if (!isAuthenticated || !isCustomer) {
+      queueMicrotask(() => setOrdersCount(0))
+      return
+    }
+    const updateOrders = async () => {
+      try {
+        const res = await orderService.getMyOrders(user)
+        const data = getApiData(res, [])
+        setOrdersCount(Array.isArray(data) ? data.length : 0)
+      } catch {
+        setOrdersCount(0)
+      }
+    }
+    updateOrders()
+    window.addEventListener('orders-updated', updateOrders)
+    return () => window.removeEventListener('orders-updated', updateOrders)
+  }, [isAuthenticated, isCustomer, user, customerKey, userName])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      queueMicrotask(() => setChatCount(0))
+      return
+    }
+
+    const updateChats = () => {
+      const threads = getChatThreads('seller')
+      if (isCustomer) {
+        const customerThreads = threads.filter((thread) => (
+          String(thread.customer_key || '') === customerKey ||
+          String(thread.customer_name || '') === userName
+        ))
+        setChatCount(customerThreads.length)
+        return
+      }
+
+      setChatCount(threads.length)
+    }
+
+    updateChats()
+    window.addEventListener('demo-chats-updated', updateChats)
+    window.addEventListener('storage', updateChats)
+    return () => {
+      window.removeEventListener('demo-chats-updated', updateChats)
+      window.removeEventListener('storage', updateChats)
+    }
+  }, [isAuthenticated, isCustomer, user, customerKey, userName])
 
   const getUserInitial = () => {
-    const name = getUserName()
-    return name.charAt(0).toUpperCase()
+    return userName.charAt(0).toUpperCase()
   }
 
   const getFirstName = () => {
-    const name = getUserName()
-    return name.split(' ')[0]
+    return userName.split(' ')[0]
   }
 
   const handleSearch = (e) => {
@@ -78,12 +156,21 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="text-dark hover:text-primary transition font-medium">Belanja</Link>
+            {!isSeller && (
+              <Link to="/products" className="text-dark hover:text-primary transition font-medium">
+                Belanja
+              </Link>
+            )}
             
-            {isAuthenticated && (
+            {isCustomer && (
               <>
-                <Link to="/wishlist" className="text-dark hover:text-primary transition-transform hover:scale-110">
+                <Link to="/wishlist" className="text-dark hover:text-primary transition-transform hover:scale-110 relative">
                   <Heart className="h-5 w-5" />
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {wishlistCount}
+                    </span>
+                  )}
                 </Link>
                 <Link to="/cart" className="text-dark hover:text-primary transition-transform hover:scale-110 relative">
                   <ShoppingCart className="h-5 w-5" />
@@ -96,19 +183,51 @@ export default function Navbar() {
                 <Link to="/wallet" className="text-dark hover:text-primary">
                   <Wallet className="h-5 w-5" />
                 </Link>
-                <Link to="/my-orders" className="text-dark hover:text-primary font-medium">Pesanan</Link>
+                <Link to="/profile" className="text-dark hover:text-primary transition-transform hover:scale-110 relative">
+                  <UserCircle2 className="h-5 w-5" />
+                </Link>
+                <Link to="/customer/chat" className="text-dark hover:text-primary font-medium relative">
+                  Chat
+                  {chatCount > 0 && (
+                    <span className="ml-1.5 bg-primary text-white text-xs rounded-full px-1.5 py-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px]">
+                      {chatCount}
+                    </span>
+                  )}
+                </Link>
+                <Link to="/my-orders" className="text-dark hover:text-primary font-medium relative">
+                  Pesanan
+                  {ordersCount > 0 && (
+                    <span className="ml-1.5 bg-primary text-white text-xs rounded-full px-1.5 py-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px]">
+                      {ordersCount}
+                    </span>
+                  )}
+                </Link>
               </>
             )}
             
             {isSeller && (
-              <Link to="/seller/dashboard" className="flex items-center gap-1 text-dark hover:text-primary">
-                <Store className="h-4 w-4" />
-                <span>Toko</span>
-              </Link>
-            )}
-            
-            {isAdmin && (
-              <Link to="/admin/dashboard" className="text-dark hover:text-primary">Admin</Link>
+              <>
+                <Link to="/seller/dashboard" className="flex items-center gap-1 text-dark hover:text-primary">
+                  <Store className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </Link>
+                <Link to="/seller/products" className="flex items-center gap-1 text-dark hover:text-primary">
+                  <Package className="h-4 w-4" />
+                  <span>Produk</span>
+                </Link>
+                <Link to="/seller/orders" className="flex items-center gap-1 text-dark hover:text-primary">
+                  <ClipboardList className="h-4 w-4" />
+                  <span>Pesanan</span>
+                </Link>
+                <Link to="/seller/reviews" className="flex items-center gap-1 text-dark hover:text-primary">
+                  <Star className="h-4 w-4" />
+                  <span>Ulasan</span>
+                </Link>
+                <Link to="/seller/chat" className="flex items-center gap-1 text-dark hover:text-primary">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>Chat</span>
+                </Link>
+              </>
             )}
 
             {isAuthenticated ? (
@@ -119,8 +238,12 @@ export default function Navbar() {
                   </div>
                   <span className="text-sm text-dark font-medium">{getFirstName()}</span>
                 </div>
-                <button onClick={handleLogout} className="text-red-500 hover:text-red-600 transition">
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition hover:border-red-200 hover:bg-red-100 hover:text-red-700"
+                >
                   <LogOut className="h-4 w-4" />
+                  <span>Keluar</span>
                 </button>
               </div>
             ) : (
@@ -157,24 +280,57 @@ export default function Navbar() {
               </div>
             </form>
             <div className="flex flex-col space-y-3">
-              <Link to="/products" className="py-2 text-dark font-medium" onClick={() => setMobileMenuOpen(false)}>Belanja</Link>
-              {isAuthenticated && (
+              {!isSeller && (
+                <Link to="/products" className="py-2 text-dark font-medium" onClick={() => setMobileMenuOpen(false)}>
+                  Belanja
+                </Link>
+              )}
+              {isCustomer && (
                 <>
-                  <Link to="/wishlist" className="py-2" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
-                  <Link to="/cart" className="py-2" onClick={() => setMobileMenuOpen(false)}>Keranjang</Link>
+                  <Link to="/wishlist" className="py-2 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                    Wishlist
+                    {wishlistCount > 0 && <span className="bg-primary text-white text-xs rounded-full px-1.5 py-0.5">{wishlistCount}</span>}
+                  </Link>
+                  <Link to="/cart" className="py-2 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                    Keranjang
+                    {cartCount > 0 && <span className="bg-primary text-white text-xs rounded-full px-1.5 py-0.5">{cartCount}</span>}
+                  </Link>
                   <Link to="/wallet" className="py-2" onClick={() => setMobileMenuOpen(false)}>Dompet</Link>
-                  <Link to="/my-orders" className="py-2" onClick={() => setMobileMenuOpen(false)}>Pesanan Saya</Link>
+                  <Link to="/profile" className="py-2 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                    Profile
+                  </Link>
+                  <Link to="/customer/chat" className="py-2 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                    Chat
+                    {chatCount > 0 && <span className="bg-primary text-white text-xs rounded-full px-1.5 py-0.5">{chatCount}</span>}
+                  </Link>
+                  <Link to="/my-orders" className="py-2 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                    Pesanan Saya
+                    {ordersCount > 0 && <span className="bg-primary text-white text-xs rounded-full px-1.5 py-0.5">{ordersCount}</span>}
+                  </Link>
                 </>
               )}
-              {isSeller && <Link to="/seller/dashboard" className="py-2" onClick={() => setMobileMenuOpen(false)}>Dashboard Seller</Link>}
-              {isAdmin && <Link to="/admin/dashboard" className="py-2" onClick={() => setMobileMenuOpen(false)}>Admin Panel</Link>}
+              {isSeller && (
+                <>
+                  <Link to="/seller/dashboard" className="py-2" onClick={() => setMobileMenuOpen(false)}>Dashboard Seller</Link>
+                  <Link to="/seller/products" className="py-2" onClick={() => setMobileMenuOpen(false)}>Kelola Produk</Link>
+                  <Link to="/seller/orders" className="py-2" onClick={() => setMobileMenuOpen(false)}>Pesanan Masuk</Link>
+                  <Link to="/seller/reviews" className="py-2" onClick={() => setMobileMenuOpen(false)}>Ulasan Produk</Link>
+                  <Link to="/seller/chat" className="py-2" onClick={() => setMobileMenuOpen(false)}>Chat Customer</Link>
+                </>
+              )}
               {!isAuthenticated ? (
                 <div className="flex flex-col space-y-2 pt-2">
                   <Link to="/login" className="py-2 text-primary font-medium" onClick={() => setMobileMenuOpen(false)}>Login</Link>
                   <Link to="/register" className="py-2 text-primary font-medium" onClick={() => setMobileMenuOpen(false)}>Daftar</Link>
                 </div>
               ) : (
-                <button onClick={handleLogout} className="py-2 text-red-500 text-left font-medium">Logout</button>
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-left font-semibold text-red-600 hover:border-red-200 hover:bg-red-100"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Keluar</span>
+                </button>
               )}
             </div>
           </div>

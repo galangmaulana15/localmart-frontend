@@ -22,5 +22,11 @@ export const productService = {
 
   getFeatured: () => api.get('/products?limit=8&sort=popular'),
 
-  getCategories: () => api.get('/categories')
+  getCategories: () => api.get('/categories'),
+
+  create: (data) => api.post('/products', data),
+
+  update: (id, data) => api.put(`/products/${id}`, data),
+
+  remove: (id) => api.delete(`/products/${id}`),
 }

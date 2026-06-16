@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF6B35;
-  --color-primary-dark: #E55A2B;
-  --color-secondary: #1A2C3E;
-  --color-accent: #00D4AA;
-  --color-accent-dark: #00B892;
-  --color-dark: #2D3436;
-  --color-light: #F8F9FA;
+  --color-primary: #F97316;
+  --color-primary-dark: #EA580C;
+  --color-secondary: #0F172A;
+  --color-accent: #22C55E;
+  --color-accent-dark: #16A34A;
+  --color-dark: #1E293B;
+  --color-light: #F8FAFC;
 }
 
 @layer utilities {
@@ -46,6 +46,35 @@
   }
   .animate-zoom-in {
     animation: zoomIn 0.4s ease-out;
+  }
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: #e5e7eb;
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
+    animation: shimmer 1.4s infinite;
+  }
+  .page-shell {
+    min-height: calc(100vh - 5rem);
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+  }
+  .panel {
+    background: white;
+    border: 1px solid #edf0f3;
+    box-shadow: 0 14px 35px rgba(26, 44, 62, 0.08);
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   
   @keyframes fadeIn {
@@ -89,6 +118,27 @@
     from { transform: scale(0.95); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  @keyframes fadeInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .carousel-slide {
+    animation: carouselFade 0.6s ease-in-out;
+  }
+  @keyframes carouselFade {
+    from { opacity: 0; transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .container-custom {
@@ -98,7 +148,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #FF6B35 0%, #F7931E 40%, #00D4AA 100%);
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 40%, #22C55E 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -107,9 +157,17 @@
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #F97316 100%);
 }
 
 .gradient-bg-secondary {
