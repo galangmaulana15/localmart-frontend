@@ -1,18 +1,48 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ClipboardList } from 'lucide-react'
 import { orderService } from '../services/orderService'
+import { paymentService } from '../services/paymentService'
 import { getApiData } from '../utils/formatRupiah'
-import { getOrderKey } from '../utils/marketplace'
+import { getOrderKey, isExternalPaymentMethod } from '../utils/marketplace'
 import { useAuth } from '../hooks/useAuth'
+import { useToast } from '../components/ui/useToast'
 import EmptyState from '../components/ui/EmptyState'
 import ErrorMessage from '../components/ui/ErrorMessage'
 import OrderCard from '../components/ui/OrderCard'
 
 export default function MyOrdersPage() {
   const { user } = useAuth()
+  const toast = useToast()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const verifyingRef = useRef(false)
+
+  const verifyXenditOrders = useCallback(async (ordersList) => {
+    if (verifyingRef.current) return false
+    verifyingRef.current = true
+    try {
+      const pendingExternal = ordersList.filter((o) => {
+        const status = String(o.order_status || '').toUpperCase()
+        return status === 'PENDING' && isExternalPaymentMethod(o.payment_method)
+      })
+      if (pendingExternal.length === 0) return false
+
+      for (const order of pendingExternal) {
+        const orderCode = order.order_code || order.order_number
+        if (!orderCode) continue
+        try {
+          const response = await paymentService.verifyPayment(orderCode)
+          if (response.data?.data?.paid) return true
+        } catch {
+          // individual verify failure is ok
+        }
+      }
+      return false
+    } finally {
+      verifyingRef.current = false
+    }
+  }, [])
 
   const fetchOrders = useCallback(async ({ silent = false } = {}) => {
     if (!user) {
@@ -21,22 +51,26 @@ export default function MyOrdersPage() {
       return
     }
 
-    if (!silent) {
-      setLoading(true)
-    }
+    if (!silent) setLoading(true)
     setError('')
     try {
       const response = await orderService.getMyOrders(user)
-      setOrders(getApiData(response, []))
+      const data = getApiData(response, [])
+      setOrders(data)
+
+      const verified = await verifyXenditOrders(data)
+      if (verified) {
+        toast.success('Pembayaran Xendit terverifikasi!', { title: 'Status pesanan diperbarui.' })
+      }
+      const refreshed = await orderService.getMyOrders(user)
+      setOrders(getApiData(refreshed, []))
     } catch (err) {
       setError(err.response?.data?.message || 'Pesanan gagal dimuat')
       setOrders([])
     } finally {
-      if (!silent) {
-        setLoading(false)
-      }
+      if (!silent) setLoading(false)
     }
-  }, [user])
+  }, [user, verifyXenditOrders, toast])
 
   useEffect(() => {
     const refresh = () => {

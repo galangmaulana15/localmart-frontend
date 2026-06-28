@@ -19,7 +19,7 @@ export default function SellerOrders() {
     setError('')
 
     try {
-      const response = await orderService.getSellerOrders()
+      const response = await orderService.getSellerOrders(user)
       setOrders(getApiData(response, []))
     } catch (err) {
       setError(err.response?.data?.message || 'Pesanan seller belum tersedia')

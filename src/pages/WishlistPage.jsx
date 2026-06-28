@@ -10,8 +10,10 @@ import EmptyState from '../components/ui/EmptyState'
 import ErrorMessage from '../components/ui/ErrorMessage'
 import ProductCard from '../components/ui/ProductCard'
 import { useToast } from '../components/ui/useToast'
+import { useAuth } from '../hooks/useAuth'
 
 export default function WishlistPage() {
+  const { user } = useAuth()
   const toast = useToast()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -23,7 +25,7 @@ export default function WishlistPage() {
   async function fetchWishlistProducts() {
     setError('')
     try {
-      const ids = getWishlist()
+      const ids = getWishlist(user)
       if (ids.length === 0) {
         setProducts([])
         setTotalPages(1)
@@ -47,14 +49,14 @@ export default function WishlistPage() {
   useEffect(() => { queueMicrotask(fetchWishlistProducts) }, [page])
 
   const handleRemove = (productId) => {
-    removeFromWishlist(productId)
+    removeFromWishlist(user, productId)
     fetchWishlistProducts()
     toast.success('Dihapus dari wishlist')
     window.dispatchEvent(new Event('wishlist-updated'))
   }
 
   const handleClear = () => {
-    clearWishlist()
+    clearWishlist(user)
     setProducts([])
     setPage(1)
     toast.success('Wishlist dikosongkan')
@@ -70,7 +72,7 @@ export default function WishlistPage() {
     }
   }
 
-  const ids = getWishlist()
+  const ids = getWishlist(user)
 
   return (
     <div className="bg-light min-h-screen pt-24 pb-16">

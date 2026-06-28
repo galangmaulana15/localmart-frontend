@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       let nextUrl = ''
       let shouldNavigateToOrders = false
       if (form.paymentMethod === 'Wallet LocalMart') {
-        const response = await orderService.checkout({
+        const response = await orderService.checkout(user, {
           items: stockAdjustedItems,
           summary,
           customer: user,

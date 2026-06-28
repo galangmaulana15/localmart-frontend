@@ -6,10 +6,12 @@ import { orderService } from '../../services/orderService'
 import { formatRupiah, getApiData } from '../../utils/formatRupiah'
 import { getChatThreads, getReviews } from '../../utils/demoStore'
 import { getOrderStatusInfo } from '../../utils/marketplace'
+import { useAuth } from '../../hooks/useAuth'
 
 const paidRevenueStatuses = ['PAID', 'PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED', 'COMPLETED']
 
 export default function SellerDashboard() {
+  const { user } = useAuth()
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -18,7 +20,7 @@ export default function SellerDashboard() {
     setLoading(true)
     const [productResult, orderResult] = await Promise.allSettled([
       productService.getAll({ limit: 100 }),
-      orderService.getSellerOrders(),
+      orderService.getSellerOrders(user),
     ])
 
     setProducts(productResult.status === 'fulfilled' ? getApiData(productResult.value, []) : [])

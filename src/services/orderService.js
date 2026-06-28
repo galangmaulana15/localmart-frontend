@@ -1,5 +1,6 @@
 import api from './api'
 import {
+  getAllLocalOrders,
   getLocalOrders,
   getLocalOrdersForUser,
   saveLocalOrder,
@@ -30,14 +31,14 @@ const normalizeCheckoutItems = (items = []) => {
   })
 }
 
-const createLocalCheckoutOrder = (payload = {}) => {
+const createLocalCheckoutOrder = (user = {}, payload = {}) => {
   const method = normalizePaymentMethod(payload.payment_method || payload.paymentMethod)
   const items = normalizeCheckoutItems(payload.items || [])
   const summary = payload.summary || calculateMarketplaceSummary(items)
   const customer = payload.customer || {}
   const orderStatus = method === 'Wallet LocalMart' ? 'PAID' : 'PENDING'
 
-  return saveLocalOrder({
+  return saveLocalOrder(user, {
     customer_key: customer.id || customer.email || 'guest',
     customer_id: customer.id || null,
     customer_name: customer.full_name || customer.name || customer.email || 'Customer LocalMart',
@@ -72,8 +73,8 @@ export const orderService = {
     }
   },
 
-  getSellerOrders: async () => {
-    const localOrders = getLocalOrders()
+  getSellerOrders: async (user) => {
+    const localOrders = user ? getAllLocalOrders() : getLocalOrders()
     try {
       const response = await api.get('/orders/seller/my-orders')
       const remoteOrders = response.data?.data || []
@@ -84,7 +85,7 @@ export const orderService = {
   },
 
   getById: async (orderId) => {
-    const localOrder = getLocalOrders().find((order) => (
+    const localOrder = getAllLocalOrders().find((order) => (
       String(order.id) === String(orderId) || String(order.order_code) === String(orderId)
     ))
 
@@ -95,8 +96,8 @@ export const orderService = {
     return api.get(`/orders/${orderId}`)
   },
 
-  checkout: async (payload = {}) => {
-    const localOrder = createLocalCheckoutOrder(payload)
+  checkout: async (user = {}, payload = {}) => {
+    const localOrder = createLocalCheckoutOrder(user, payload)
     return localResponse(localOrder)
   },
 

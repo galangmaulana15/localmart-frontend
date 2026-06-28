@@ -5,6 +5,7 @@ import { getApiData } from '../utils/formatRupiah'
 import { Search, SlidersHorizontal, X, Grid3X3, List, ChevronLeft, ChevronRight, Shirt, Monitor, Apple, Dumbbell, Home, Pill, Sparkles } from 'lucide-react'
 import { cartService } from '../services/cartService'
 import { addToWishlist, removeFromWishlist, isInWishlist } from '../utils/demoStore'
+import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../components/ui/useToast'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import EmptyState from '../components/ui/EmptyState'
@@ -25,6 +26,7 @@ const sortOptions = [
 ]
 
 export default function ProductListPage() {
+  const { user } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
@@ -103,11 +105,11 @@ export default function ProductListPage() {
   const toast = useToast()
 
   const handleToggleWishlist = (product) => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
+    if (isInWishlist(user, product.id)) {
+      removeFromWishlist(user, product.id)
       toast.success('Dihapus dari wishlist')
     } else {
-      addToWishlist(product.id)
+      addToWishlist(user, product.id)
       toast.success('Ditambahkan ke wishlist')
     }
     window.dispatchEvent(new Event('wishlist-updated'))

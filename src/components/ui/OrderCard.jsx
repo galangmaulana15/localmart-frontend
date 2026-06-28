@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, CreditCard, MapPin, PackageCheck, Star, Truck, X, Send } from 'lucide-react'
+import { CalendarDays, CreditCard, MapPin, PackageCheck, RefreshCw, Star, Truck, X, Send } from 'lucide-react'
 import { formatRupiah } from '../../utils/formatRupiah'
 import { buildChatThreadId, getUserDisplayName, hasReview, saveChatMessage, saveReview } from '../../utils/demoStore'
 import {
@@ -96,6 +96,39 @@ export default function OrderCard({ order, role = 'customer', user = null, onRef
       window.location.replace(invoiceUrl)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Gagal membuka pembayaran Xendit')
+      setActionLoading(false)
+    }
+  }
+
+  const handleVerifyPayment = async () => {
+    setActionLoading(true)
+    try {
+      const orderCode = order.order_code || order.order_number
+      if (!orderCode) throw new Error('Kode pesanan tidak ditemukan')
+      const response = await paymentService.verifyPayment(orderCode)
+      const data = response.data?.data
+      if (data?.paid) {
+        toast.success('Pembayaran berhasil diverifikasi! Status pesanan menjadi PAID.')
+        onRefresh?.()
+      } else {
+        toast.info(data?.message || 'Status pembayaran masih belum diverifikasi. Silakan coba lagi nanti.')
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Gagal memverifikasi pembayaran')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleSellerMarkPaid = async () => {
+    setActionLoading(true)
+    try {
+      await orderService.sellerUpdateStatus(orderId, 'PAID')
+      toast.success('Pesanan ditandai sudah dibayar')
+      onRefresh?.()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Gagal menandai pesanan')
+    } finally {
       setActionLoading(false)
     }
   }
@@ -238,10 +271,22 @@ export default function OrderCard({ order, role = 'customer', user = null, onRef
             {role === 'seller' && orderStatus === 'PENDING' && (
               <button
                 type="button"
-                disabled
-                className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-400"
+                onClick={handleSellerMarkPaid}
+                disabled={actionLoading}
+                className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10 disabled:opacity-50"
               >
-                Proses Pesanan
+                {actionLoading ? 'Memproses...' : 'Tandai Sudah Dibayar'}
+              </button>
+            )}
+            {role === 'customer' && orderStatus === 'PENDING' && isPendingExternalPayment && (
+              <button
+                type="button"
+                onClick={handleVerifyPayment}
+                disabled={actionLoading}
+                className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              >
+                <RefreshCw className={`inline h-4 w-4 mr-1 ${actionLoading ? 'animate-spin' : ''}`} />
+                {actionLoading ? 'Memverifikasi...' : 'Cek Status Pembayaran'}
               </button>
             )}
             {role === 'customer' && orderStatus === 'PENDING' && (

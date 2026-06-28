@@ -41,7 +41,7 @@ export default function ProductDetailPage() {
     if (id) {
       queueMicrotask(() => {
         fetchProduct()
-        setIsWishlist(isInWishlist(Number(id)))
+        setIsWishlist(isInWishlist(user, Number(id)))
         setReviews(getProductReviews(id))
       })
     }
@@ -75,11 +75,11 @@ export default function ProductDetailPage() {
 
     const productId = Number(id)
     if (isWishlist) {
-      removeFromWishlist(productId)
+      removeFromWishlist(user, productId)
       setIsWishlist(false)
       toast.success('Dihapus dari wishlist')
     } else {
-      addToWishlist(productId)
+      addToWishlist(user, productId)
       setIsWishlist(true)
       toast.success('Ditambahkan ke wishlist')
     }

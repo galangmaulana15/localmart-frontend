@@ -6,4 +6,7 @@ export const paymentService = {
 
   payOrderWithXendit: (orderId) =>
     api.post(`/payments/xendit/orders/${orderId}/pay`),
+
+  verifyPayment: (orderCode) =>
+    api.post(`/payments/xendit/verify/${orderCode}`),
 }

@@ -27,17 +27,13 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    const updateWishlist = () => setWishlistCount(getWishlist().length)
+    const updateWishlist = () => setWishlistCount(getWishlist(user).length)
     updateWishlist()
     window.addEventListener('wishlist-updated', updateWishlist)
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'localmart_wishlist') updateWishlist()
-    })
     return () => {
       window.removeEventListener('wishlist-updated', updateWishlist)
-      window.removeEventListener('storage', updateWishlist)
     }
-  }, [])
+  }, [user])
 
   useEffect(() => {
     const updateCart = async () => {
